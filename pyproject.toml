@@ -1,0 +1,15 @@
+[project]
+name = "markdown-2-slides"
+version = "0.1.0"
+description = "Generate presentation slides from markdown using Gemini image generation"
+requires-python = ">=3.11"
+dependencies = [
+    "google-genai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "python-pptx>=1.0.0",
+    "rich>=13.0.0",
+    "Pillow>=10.0.0",
+]
+
+[project.scripts]
+md2slides = "md2slides:main"
