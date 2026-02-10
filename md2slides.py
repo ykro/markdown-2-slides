@@ -36,61 +36,70 @@ from rich.text import Text
 MASTER_STYLE = (
     "Generate a SINGLE 16:9 widescreen slide image with a clean, polished, professional look.\n\n"
 
-    "COLOR PALETTE (use ONLY these):\n"
-    "Background #FAFAF8, accent teal #1A7A7A, warm accent coral #E07A5F (only for emphasized terms), "
-    "title #1C1C28, body #44444F, structural lines #E8E8E8, card fill #F2F6F6.\n\n"
+    "COLOR PALETTE:\n"
+    "- Background: warm off-white\n"
+    "- Accent: deep teal\n"
+    "- Emphasis: warm coral-orange (only for explicitly emphasized terms)\n"
+    "- Title text: near-black\n"
+    "- Body text: dark gray\n"
+    "- Structural lines: light gray\n"
+    "- Card fill: pale teal-gray\n"
+    "(Internal color references — NEVER render these on the slide: "
+    "#FAFAF8, #1A7A7A, #E07A5F, #1C1C28, #44444F, #E8E8E8, #F2F6F6)\n\n"
 
     "TYPOGRAPHY:\n"
-    "Font: geometric sans-serif (Inter style). Title: large bold near-black. Body: medium regular dark gray. "
-    "Emphasized words: coral #E07A5F, medium weight, same size as body.\n\n"
+    "Font: geometric sans-serif (Inter style). Title: large bold near-black. "
+    "Body: medium regular dark gray. "
+    "Emphasized words: coral-orange, medium weight, same size as body.\n\n"
 
     "LAYOUT STRUCTURE (every slide identical):\n"
     "- A thin solid teal vertical stripe flush against the left edge, running the full height of the slide.\n"
     "- Title positioned in the upper-left area with generous top and left margins.\n"
-    "- A short teal accent line (roughly thumbnail-width) directly under the title.\n"
+    "- A short teal accent line (about one-third the title width) directly under the title.\n"
     "- Main content area begins below the accent line, with matching left margin and comfortable right margin.\n"
     "- A faint gray horizontal hairline near the very bottom of the slide.\n\n"
 
-    "CRITICAL RULES:\n"
-    "- The ONLY text that may appear on the slide is the exact Spanish content provided below under SLIDE CONTENT. "
-    "Render every word EXACTLY as given. Do NOT add, remove, translate, or alter ANY word.\n"
-    "- DO NOT render ANY numbers, percentages, measurements, hex codes, or technical terms from these instructions. "
-    "These instructions describe style only and must NEVER appear as visible text.\n"
-    "- DO NOT render: photographs, illustrations, clip art, icons, emoji, logos, slide numbers, "
-    "watermarks, page numbers, or any decorative numerals.\n"
-    "- Text must be sharp, anti-aliased, and legible at projection size.\n"
+    "CONTENT RULES:\n"
+    "- Render ONLY the exact text listed under SLIDE CONTENT, in its original language. "
+    "Every word exactly as given — do not add, remove, translate, or alter any word.\n"
+    "- The slide contains NOTHING else: no photographs, illustrations, clip art, icons, emoji, "
+    "logos, slide numbers, watermarks, page numbers, decorative numerals, "
+    "or any text from these instructions.\n"
+    "- Text must be sharp, anti-aliased, and legible at projection size.\n\n"
+
+    "VISUAL HIERARCHY (in order of importance):\n"
+    "1. Text must be perfectly legible and correctly spelled\n"
+    "2. Layout structure must match exactly\n"
+    "3. Color usage must follow the palette\n"
 )
 
 PROMPT_TEXT_SLIDE = """{master_style}
 
 SLIDE CONTENT (render ONLY this text):
 Title: {title}
-Subtitle: {takeaway}
-Body: {body}
+{content_lines}
 
-SLIDE-SPECIFIC LAYOUT:
-- The subtitle is a single short sentence in semi-bold teal, placed directly below the teal accent line, before the body text. It acts as the key takeaway.
-- Body text is left-aligned, filling the full content area width.
-- Emphasized terms appear in coral, medium weight, same size as body text.
-- The right side is clean whitespace. NO decorative circles, shapes, or background elements.
-- The bottom fifth of the slide is empty. The design is pure typography and whitespace.
+{emphasis_block}{layout_note}SLIDE-SPECIFIC LAYOUT:
+- If a subtitle is present, render it as a single short sentence in semi-bold teal, placed directly below the teal accent line, before the body text. It acts as the key takeaway.
+- Body text is left-aligned, spanning the full width of the content area from left margin to right margin.
+- Emphasized terms appear in coral-orange, medium weight, same size as body text.
+- No decorative circles, shapes, or background elements anywhere on the slide.
+- The bottom portion of the slide is empty.
 """
 
 PROMPT_BULLET_SLIDE = """{master_style}
 
 SLIDE CONTENT (render ONLY this text):
 Title: {title}
-Subtitle: {takeaway}
 {body}
 
-SLIDE-SPECIFIC LAYOUT:
-- The subtitle is a single short sentence in semi-bold teal, placed directly below the teal accent line, before the bullet cards.
+{emphasis_block}SLIDE-SPECIFIC LAYOUT:
 - Each bullet is a horizontal card: light teal-gray fill, slightly rounded corners, with a solid teal left border.
-- If the bullet has a "Label: description" format, render the label in semi-bold TEAL (not coral) and the description in regular dark gray. Labels are structural, not emphasis.
+- If the bullet has a "Label: description" format, render the label in semi-bold teal and the description in regular dark gray. Labels are structural, not emphasis.
 - If no colon, use a small teal dot before the text in dark gray.
-- Cards are evenly spaced vertically, spanning about three-quarters of the slide width.
-- Only terms explicitly listed as emphasized appear in coral. Card labels always use teal.
-- NO decorative elements beyond the cards and the standard layout frame.
+- Cards are evenly spaced vertically, spanning about three-quarters of the content area width.
+- Only terms explicitly marked for emphasis appear in coral-orange. Card labels always use teal.
+- No decorative elements beyond the cards and the standard layout frame.
 """
 
 PROMPT_DIAGRAM_SLIDE = """{master_style}
@@ -105,12 +114,12 @@ DIAGRAM TO DRAW:
 SLIDE-SPECIFIC LAYOUT:
 - If there is a description line, render it in semi-bold teal directly below the teal accent line.
 - The diagram is centered and occupies the majority of the slide area.
-- ENTRY nodes (first node in the flow) and EXIT nodes (last node): use a light coral-tinted fill with thin coral border, to visually distinguish them from processing nodes.
-- PROCESSING nodes (all middle nodes): white fill with thin teal border and a very subtle shadow.
+- Entry nodes (first in the flow) and exit nodes (last): light coral-tinted fill with thin coral border.
+- Processing nodes (all middle nodes): white fill with thin teal border and a very subtle shadow.
 - Node text: small, near-black, centered inside each node.
 - Arrows: thin teal lines with clean triangular arrowheads.
 - Preferred flow direction: left-to-right. Generous spacing between nodes.
-- NO decorative elements beyond the diagram and the standard layout frame.
+- No decorative elements beyond the diagram and the standard layout frame.
 """
 
 MODEL_NAME = "gemini-3-pro-image-preview"
@@ -189,11 +198,12 @@ def clean_diagram(text: str) -> str:
     return cleaned
 
 
-def split_takeaway_and_body(body: str) -> tuple[str, str]:
-    """Split slide body into a takeaway (first sentence) and remaining body.
+def split_takeaway_and_body(body: str) -> tuple[str, str, list[str]]:
+    """Split slide body into a takeaway (first sentence), remaining body, and emphasis terms.
 
-    Returns (takeaway, remaining_body). The takeaway becomes the subtitle,
-    and the remaining body is the detail text — no duplication.
+    Returns (takeaway, remaining_body, emphasis_terms). The takeaway becomes the subtitle,
+    and the remaining body is the detail text — no duplication. Emphasis terms are returned
+    separately so they can be placed outside the content section.
     """
     cleaned, emphasis = clean_markdown(body)
     # Remove code blocks for takeaway extraction
@@ -202,25 +212,34 @@ def split_takeaway_and_body(body: str) -> tuple[str, str]:
     text_only = re.sub(r"^[•*]\s+", "", text_only, flags=re.MULTILINE).strip()
 
     if not text_only:
-        return "", cleaned
+        return "", cleaned, emphasis
 
     # Split into sentences
     parts = re.split(r"(?<=[.!?])\s+", text_only, maxsplit=1)
-    takeaway = parts[0].rstrip(".")
+    candidate = parts[0].rstrip(".")
 
-    # Truncate takeaway to ~12 words
-    words = takeaway.split()
+    # Only use as takeaway if it's short enough to work as a subtitle (max 12 words).
+    # If it's too long, skip the split — everything stays as body text.
+    words = candidate.split()
     if len(words) > 12:
-        takeaway = " ".join(words[:12]) + "..."
+        return "", cleaned, emphasis
+
+    takeaway = candidate
 
     # Remaining body is everything after the first sentence
     remaining = parts[1] if len(parts) > 1 else ""
 
-    # Re-add emphasis hints to remaining
-    if emphasis and remaining:
-        remaining += f"\n\n(Render these terms in coral-orange: {', '.join(emphasis)})"
+    return takeaway, remaining, emphasis
 
-    return takeaway, remaining
+
+def _build_emphasis_block(emphasis_terms: list[str]) -> str:
+    """Build the emphasis instruction block, separated from slide content."""
+    if not emphasis_terms:
+        return ""
+    return (
+        "EMPHASIS INSTRUCTIONS (do NOT render this section as text):\n"
+        f"Render the following terms in coral-orange: {', '.join(emphasis_terms)}\n\n"
+    )
 
 
 def build_prompt(slide: dict) -> str:
@@ -228,7 +247,6 @@ def build_prompt(slide: dict) -> str:
     title = slide["title"]
     body = slide["body"]
     slide_type = classify_slide(body)
-    styled = MASTER_STYLE
 
     if slide_type == "diagram":
         code_match = re.search(r"```\w*\n(.*?)```", body, re.DOTALL)
@@ -237,13 +255,12 @@ def build_prompt(slide: dict) -> str:
         diagram = clean_diagram(code_match.group(1).strip()) if code_match else ""
         desc_block = f"Description: {description}" if description else ""
         return PROMPT_DIAGRAM_SLIDE.format(
-            master_style=styled,
+            master_style=MASTER_STYLE,
             title=title,
             description_block=desc_block,
             diagram=diagram,
         )
     elif slide_type == "bullets":
-        # For bullets, use the full body — no takeaway split needed
         lines = body.split("\n")
         formatted_lines = []
         all_emphasis = []
@@ -257,23 +274,36 @@ def build_prompt(slide: dict) -> str:
                 formatted_lines.append(cleaned_line)
                 all_emphasis.extend(emphasis)
         bullet_body = "Bullet points:\n" + "\n".join(f"  • {l}" for l in formatted_lines if l)
-        if all_emphasis:
-            bullet_body += f"\n\n(Render these terms in coral-orange: {', '.join(all_emphasis)})"
-        # No subtitle for bullet slides — the cards ARE the content
+        # Filter out label-style terms (ending with :) — those are structural and use teal, not coral
+        non_label_emphasis = [t for t in all_emphasis if not t.endswith(":")]
         return PROMPT_BULLET_SLIDE.format(
-            master_style=styled,
+            master_style=MASTER_STYLE,
             title=title,
-            takeaway="",
             body=bullet_body,
+            emphasis_block=_build_emphasis_block(non_label_emphasis),
         )
     else:
-        # For text slides: first sentence → subtitle, rest → body (no duplication)
-        takeaway, remaining = split_takeaway_and_body(body)
+        takeaway, remaining, emphasis = split_takeaway_and_body(body)
+
+        # Build content lines conditionally — no empty labels in the prompt
+        content_parts = []
+        if takeaway:
+            content_parts.append(f"Subtitle: {takeaway}")
+        if remaining:
+            content_parts.append(f"Body: {remaining}")
+        content_lines = "\n".join(content_parts)
+
+        # Title-only slides get a note outside the content section
+        layout_note = ""
+        if not takeaway and not remaining:
+            layout_note = "NOTE: This is a title-only slide. Leave the content area as elegant empty whitespace.\n\n"
+
         return PROMPT_TEXT_SLIDE.format(
-            master_style=styled,
+            master_style=MASTER_STYLE,
             title=title,
-            takeaway=takeaway,
-            body=remaining or "(title-only slide — leave the body area empty with elegant whitespace)",
+            content_lines=content_lines,
+            emphasis_block=_build_emphasis_block(emphasis),
+            layout_note=layout_note,
         )
 
 
